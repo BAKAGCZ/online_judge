@@ -1,0 +1,72 @@
+<html>
+
+<head>
+    <title>OnlineJudege - 代码提交页</title>
+    <style type="text/css">
+        h1,
+        h2 {
+            margin: 20px;
+        }
+
+        a {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+
+        table.menu {
+            text-align: left;
+            margin-left: 15px;
+            width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="menu">
+        <tr>
+            <th><a href="/">主页</a></th>
+            <th><a href="/problem/list">题库</a></th>
+            <th><a href="/status/">提交记录</a></th>
+            <th><a href="/problem/submit/0/">提交代码</a></th>
+            <th><a href="/user/ranking/">排行榜</a></th>
+            <th>
+                {% if request.user.username %}
+                <a href="/user/">用户中心</a>
+                {% else %}
+                <a href="/user/login/">用户中心</a>
+                {% endif %}
+            </th>
+        </tr>
+    </table>
+
+    <h1>代码提交页</h1>
+    <form action="/status/submithandler/" method="post">
+        {% csrf_token %}
+        <!-- {{ form }} -->
+        <p>
+            <label for="problem_id">题目编号：</label>
+            <input name="problem_id" type="text" value="{{ problem_id }}" required />
+        </p>
+        <p>
+            编程语言：
+            <select name="lang" required>
+                <option value="C">C</option>
+                <option value="C++">C++</option>
+                <!-- <option value="Python3">Python3</option> -->
+            </select>
+        </p>
+        <p>源码：</p>
+        <p><textarea name="code" rows="30" cols="80" required></textarea></p>
+        <p>
+            <input type="submit" /> &nbsp;
+            <input type="reset" />
+        </p>
+    </form>
+</body>
+
+</html>

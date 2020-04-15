@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <title>OnlineJudege - 用户中心</title>
+    <style type="text/css">
+        h1,
+        h2 {
+            margin: 20px;
+        }
+
+        a {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+
+        table.menu {
+            text-align: left;
+            margin-left: 15px;
+            width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="menu">
+        <tr>
+            <th><a href="/">主页</a></th>
+            <th><a href="/problem/list">题库</a></th>
+            <th><a href="/status/">提交记录</a></th>
+            <th><a href="/problem/submit/0/">提交代码</a></th>
+            <th><a href="/user/ranking/">排行榜</a></th>
+            <th>
+                {% if request.user.username %}
+                <a href="/user/">用户中心</a>
+                {% else %}
+                <a href="/user/login/">用户中心</a>
+                {% endif %}
+            </th>
+        </tr>
+    </table>
+
+    <h1>用户信息</h1>
+    <br>
+    {% if user %}
+    用户名：{{ user.username }}<br>
+    编号：{{ user.id }}<br>
+    积分：{{ user.point }}<br>
+    {% if rank %}
+    排名：{{ rank }}<br>
+    {% endif %}
+    <br>
+    <form action="/status/search/" name="userStatusSearchForm" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="problem_id" value="">
+        <input type="hidden" name="username" value={{ user.username }}>
+        <input type="hidden" name="result" value="All">
+        <input type="hidden" name="lang" value="All">
+        尝试解题数：{{ user.attempt_number }}&nbsp;&nbsp;
+        <input type="submit" value="查看"><br>
+    </form>
+    <form action="/status/search/" name="userACSearchForm" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="problem_id" value="">
+        <input type="hidden" name="username" value={{ user.username }}>
+        <input type="hidden" name="result" value="Accepted">
+        <input type="hidden" name="lang" value="All">
+        成功解题数：{{ user.solved_number }}&nbsp;&nbsp;
+        <input type="submit" value="查看"><br>
+    </form>
+    <br>
+
+    注册时间：{{ user.date_joined }}<br>
+    最后登陆：{{ user.last_login }}<br>
+    {% else %}
+    未知用户！
+    {% endif %}
+</body>
+
+</html>

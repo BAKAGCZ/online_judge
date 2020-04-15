@@ -1,0 +1,71 @@
+<html>
+
+<head>
+    <title>OnlineJudege - 登陆</title>
+    <style type="text/css">
+        h1,
+        h2 {
+            margin: 20px;
+        }
+
+        a {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+
+        table.menu {
+            text-align: left;
+            margin-left: 15px;
+            width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <table class="menu">
+        <tr>
+            <th><a href="/">主页</a></th>
+            <th><a href="/problem/list">题库</a></th>
+            <th><a href="/status/">提交记录</a></th>
+            <th><a href="/problem/submit/0/">提交代码</a></th>
+            <th><a href="/user/ranking/">排行榜</a></th>
+            <th>
+                {% if request.user.username %}
+                <a href="/user/">用户中心</a>
+                {% else %}
+                <a href="/user/login/">用户中心</a>
+                {% endif %}
+            </th>
+        </tr>
+    </table>
+    <h2>登陆</h2>
+    <br>
+    <table>
+        <form action="/user/loginhandler/" method="POST">
+            {% csrf_token %}
+            <tr>
+                <th>用户名：</th>
+                <td><input type="text" name="username"></td>
+            </tr>
+            <tr>
+                <th>密码：</th>
+                <td><input type="password" name="password"></td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>
+                    <input type="submit" name="submit" value="登陆">&nbsp;
+                    <input type="reset" name="reset" value="重置">
+                </td>
+            </tr>
+        </form>
+    </table>
+</body>
+
+</html>

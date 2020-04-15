@@ -1,0 +1,170 @@
+<html>
+
+<head>
+    <title>OnlineJudege - 提交记录</title>
+    <style type="text/css">
+        h1,
+        h2 {
+            margin: 20px;
+        }
+
+        a {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+
+        table.menu {
+            text-align: left;
+            margin-left: 15px;
+            width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <table class="menu">
+        <tr>
+            <th><a href="/">主页</a></th>
+            <th><a href="/problem/list">题库</a></th>
+            <th><a href="/status/">提交记录</a></th>
+            <th><a href="/problem/submit/0/">提交代码</a></th>
+            <th><a href="/user/ranking/">排行榜</a></th>
+            <th>
+                {% if request.user.username %}
+                <a href="/user/">用户中心</a>
+                {% else %}
+                <a href="/user/login/">用户中心</a>
+                {% endif %}
+            </th>
+        </tr>
+    </table>
+    <h1>提交记录</h1>
+
+    <form action="/status/search/" method="post">
+        {% csrf_token %}
+
+        Problem ID:
+        {% if problem_id %}
+        <input type="text" name="problem_id" value="{{ problem_id }}">
+        {% else %}
+        <input type="text" name="problem_id">
+        {% endif %}
+
+        Username:
+        {% if username %}
+        <input type="text" name="username" value="{{ username }}">
+        {% else %}
+        <input type="text" name="username">
+        {% endif %}
+
+        Result:<select name="result">
+            {% if result == "All" %}
+            <option value="All" selected>All</option>
+            {% else %}
+            <option value="All">All</option>
+            {% endif %}
+            {% if result == "Compile Error" %}
+            <option value="Compile Error" selected>Compile Error</option>
+            {% else %}
+            <option value="Compile Error">Compile Error</option>
+            {% endif %}
+            {% if result == "Runtime Error" %}
+            <option value="Runtime Error" selected>Runtime Error</option>
+            {% else %}
+            <option value="Runtime Error">Runtime Error</option>
+            {% endif %}
+            {% if result == "Wrong Answer" %}
+            <option value="Wrong Answer" selected>Wrong Answer</option>
+            {% else %}
+            <option value="Wrong Answer">Wrong Answer</option>
+            {% endif %}
+            {% if result == "Presentation Error" %}
+            <option value="Presentation Error" selected>Presentation Error</option>
+            {% else %}
+            <option value="Presentation Error">Presentation Error</option>
+            {% endif %}
+            {% if result == "Accepted" %}
+            <option value="Accepted" selected>Accepted</option>
+            {% else %}
+            <option value="Accepted">Accepted</option>
+            {% endif %}
+            {% if result == "Time Limit Exceeded" %}
+            <option value="Time Limit Exceeded" selected>Time Limit Exceeded</option>
+            {% else %}
+            <option value="Time Limit Exceeded">Time Limit Exceeded</option>
+            {% endif %}
+            {% if result == "Memory Limit Exceeded" %}
+            <option value="Memory Limit Exceeded" selected>Memory Limit Exceeded</option>
+            {% else %}
+            <option value="Memory Limit Exceeded">Memory Limit Exceeded</option>
+            {% endif %}
+            {% if result == "Output Limit Exceeded" %}
+            <option value="Output Limit Exceeded" selected>Output Limit Exceeded</option>
+            {% else %}
+            <option value="Output Limit Exceeded">Output Limit Exceeded</option>
+            {% endif %}
+        </select>
+
+        Language:<select name="lang">
+            {% if lang == "All" %}
+            <option value="All" selected>All</option>
+            {% else %}
+            <option value="All">All</option>
+            {% endif %}
+            {% if lang == "C" %}
+            <option value="C" selected>C</option>
+            {% else %}
+            <option value="C">C</option>
+            {% endif %}
+            {% if lang == "C++" %}
+            <option value="C++" selected>C++</option>
+            {% else %}
+            <option value="C++">C++</option>
+            {% endif %}
+        </select>
+        <input type="submit" value="search">
+        <input type="reset" value="reset">
+    </form>
+
+    {% if solution_list %}
+    <table border="1" width=100%>
+        <tr>
+            <th>Run Id</th>
+            <th>User</th>
+            <th>Problem</th>
+            <th>Result</th>
+            <th>Memory</th>
+            <th>Time</th>
+            <th>Language</th>
+            <th>Code Length</th>
+            <th>Submit Time</th>
+        </tr>
+        {% for elem in solution_list %}
+        <tr>
+            <td>{{ elem.id }}</td>
+            <td>{{ elem.username }}</td>
+            <td><a href="/problem/{{ elem.problem_id }}/">{{ elem.problem_id }}</a></td>
+            <td>{{ elem.result }}</td>
+            <td>{{ elem.memory }}</td>
+            <td>{{ elem.time }}</td>
+            <td><a href="showsource/{{ elem.id }}/">{{ elem.lang }}</a></td>
+            <td>{{ elem.length }}</td>
+            <td>{{ elem.submitted }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% else %}
+    <p>暂无</p>
+
+    {% endif %}
+
+</body>
+
+</html>

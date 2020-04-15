@@ -1,0 +1,23 @@
+{% if solution_list %}
+{% if solution_id %}
+{% for elem in solution_list %}
+{% if elem.id == solution_id %}
+<h1>源代码</h1>
+<p style="font-size: 13px;">
+    题目编号：{{ elem.problem_id }}&nbsp;&nbsp;
+    用户名：{{ elem.username }}&nbsp;&nbsp;
+    <br>
+    使用内存：{{ elem.memory }}&nbsp;&nbsp;
+    使用时间：{{ elem.time }}&nbsp;&nbsp;
+    <br>
+    编程语言：{{ elem.lang }}&nbsp;&nbsp;
+    判题结果：{{ elem.result }}
+</p>
+<br>
+<br>
+<h2><b>源码</b></h2>
+<pre>{{ elem.code }}</pre>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endif %}

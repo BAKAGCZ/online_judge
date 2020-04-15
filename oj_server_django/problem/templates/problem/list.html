@@ -1,0 +1,103 @@
+<html>
+
+<head>
+    <title>OnlineJudege - 题库</title>
+    <style type="text/css">
+        h1,
+        h2 {
+            margin: 20px;
+        }
+
+        a {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+
+        table.menu {
+            text-align: left;
+            margin-left: 15px;
+            width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <table class="menu">
+        <tr>
+            <th><a href="/">主页</a></th>
+            <th><a href="/problem/list">题库</a></th>
+            <th><a href="/status/">提交记录</a></th>
+            <th><a href="/problem/submit/0/">提交代码</a></th>
+            <th><a href="/user/ranking/">排行榜</a></th>
+            <th>
+                {% if request.user.username %}
+                <a href="/user/">用户中心</a>
+                {% else %}
+                <a href="/user/login/">用户中心</a>
+                {% endif %}
+            </th>
+        </tr>
+    </table>
+
+
+    <h1>题库</h1>
+
+    <form action="/problem/search/" method="post">
+        {% csrf_token %}
+        <!-- 查找题目&nbsp; -->
+        <select name="search_range">
+            {% if search_range == "problem_id" %}
+            <option value="problem_id" selected>编号</option>
+            {% else %}
+            <option value="problem_id">编号</option>
+            {% endif %}
+            {% if search_range == "title" %}
+            <option value="title" selected>题目</option>
+            {% else %}
+            <option value="title">题目</option>
+            {% endif %}
+            {% if search_range == "point" %}
+            <option value="point" selected>分值</option>
+            {% else %}
+            <option value="point">分值</option>
+            {% endif %}
+        </select>
+        {% if search_string %}
+        <input type="text" name="search_string" value="{{search_string}}">
+        {% else %}
+        <input type="text" name="search_string">
+        {% endif %}
+        <input type="submit" value="search">
+        <input type="reset" value="reset">
+    </form>
+
+    {% if problem_list %}
+    <table border="1" width=100%>
+        <tr>
+            <th>编号</th>
+            <th>题目</th>
+            <th>分值</th>
+        </tr>
+        {% for elem in problem_list %}
+        <tr>
+            <td>{{ elem.id }}</td>
+            <td><a href="/problem/{{ elem.id }}/">{{ elem.title }}</a></td>
+            <td>{{ elem.point }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% else %}
+    <p>暂无</p>
+
+    {% endif %}
+
+</body>
+
+</html>

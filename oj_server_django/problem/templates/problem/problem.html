@@ -1,0 +1,90 @@
+<html>
+
+<head>
+    <title>OnlineJudege - 题目</title>
+    <style type="text/css">
+        h1,
+        h2,
+        p {
+            margin: 20px;
+        }
+
+        a {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+
+        table.menu {
+            text-align: left;
+            margin-left: 15px;
+            width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <table class="menu">
+        <tr>
+            <th><a href="/">主页</a></th>
+            <th><a href="/problem/list">题库</a></th>
+            <th><a href="/status/">提交记录</a></th>
+            <th><a href="/problem/submit/0/">提交代码</a></th>
+            <th><a href="/user/ranking/">排行榜</a></th>
+            <th>
+                {% if request.user.username %}
+                <a href="/user/">用户中心</a>
+                {% else %}
+                <a href="/user/login/">用户中心</a>
+                {% endif %}
+            </th>
+        </tr>
+    </table>
+
+
+    {% if problem_list %}
+    {% if problem_id %}
+    {% for elem in problem_list %}
+    {% if elem.id == problem_id %}
+    <br>
+    <h2>题目{{ elem.id }}.{{ elem.title }}</h2>
+    <p style="font-size: 13px;">
+        时间限制：{{ elem.time_limit }}&nbsp;&nbsp;
+        内存限制：{{ elem.memory_limit }}&nbsp;&nbsp;
+        解题得分：{{ elem.point }}
+    </p>
+    <p>
+        <br>
+        <hr>
+        <br>
+        <b>题目描述</b>
+        <pre>{{ elem.description }}</pre>
+        <b>输入格式</b>
+        <pre>{{ elem.input_format }}</pre>
+        <b>输出格式</b>
+        <pre>{{ elem.output_format }}</pre>
+        <b>输入样例</b>
+        <pre>{{ elem.sample_input }}</pre>
+        <b>输出样例</b>
+        <pre>{{ elem.sample_output }}</pre>
+        <b>提示</b>
+        <pre>{{ elem.hint }}</pre>
+        <p style="font-size: 13px;"><b>题目来源</b>&nbsp;
+            <a href="{{ elem.source }}">{{ elem.source }}</a></p>
+        <p>[<a href="../submit/{{ elem.id }}">Submit</a>]</p>
+        <br>
+        <hr>
+        <br>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+    </p>
+</body>
+
+</html>
