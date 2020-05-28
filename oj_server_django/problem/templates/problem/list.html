@@ -38,7 +38,7 @@
                         <div class="tw-menu-container">
                             <ul id="menu" class="sf-menu">
                                 <li class="menu-item menu-item-has-children"><a href="/">主页</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/problem/list">题库</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/problem/list/1/">题库</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/status">提交记录</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/submit/0">提交代码</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/user/ranking">排行榜</a></li>
@@ -77,7 +77,7 @@
                             </div>
 
                             <div class="row">
-                                <form role="search" action="/problem/search/" method="post" id="searchform">
+                                <form role="search" action="/problem/search/1/" method="post" id="searchform">
                                     {% csrf_token %}
                                     <!-- 查找题目&nbsp; -->
 
@@ -125,14 +125,14 @@
                                         <div class="testimonial-item clearfix style-default">
                                             <div class="testimonial-footer clearfix">
 
-                                                {% if problem_list %}
+                                                {% if page %}
                                                 <table border="1" width=100%>
                                                     <tr>
                                                         <th>编号</th>
                                                         <th>题目</th>
                                                         <th>分值</th>
                                                     </tr>
-                                                    {% for elem in problem_list %}
+                                                    {% for elem in page %}
                                                     <tr>
                                                         <td>{{ elem.id }}</td>
                                                         <td><a href="/problem/{{ elem.id }}">{{ elem.title }}</a>
@@ -142,17 +142,126 @@
                                                     {% endfor %}
                                                 </table>
 
+
+                                                <div aria-label="Page navigation" style="margin-top: 20px;">
+                                                    <div class="tw-menu-container pagination">
+                                                        <ul id="menu" class="sf-menu pagination">
+
+                                                            {% if type == "list" %}
+                                                            <!--  判断当前页是否有上一页 -->
+                                                            {% if page.has_previous %}
+                                                            <li class="menu-item menu-item-has-children">
+                                                                <form
+                                                                    action="/problem/list/{{page.previous_page_number}}/"
+                                                                    name="preSearchForm" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="submit" value="<<"
+                                                                        aria-label="Previous" aria-label="Previous">
+                                                                </form>
+                                                            </li>
+                                                            {% endif %}
+
+                                                            <!--  循环遍历页码列表，并展示到底部 -->
+                                                            {% for num in page.paginator.page_range%}
+                                                            {%if pindex == page.number%}
+                                                            <li class="menu-item menu-item-has-children">
+                                                                <input type="submit" value={{ num }}>
+                                                            </li>
+                                                            {%else%}
+                                                            <li class="menu-item menu-item-has-children">
+                                                                <form action="/problem/list/{{num}}/"
+                                                                    name="indexSearchForm" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="submit" value={{ num }}>
+                                                                </form>
+                                                            </li>
+                                                            {%endif%}
+                                                            {% endfor %}
+
+                                                            <!--  判断当前页是否有下一页 -->
+                                                            {% if page.has_next %}
+                                                            <li class="menu-item menu-item-has-children">
+                                                                <form action="/problem/list/{{page.next_page_number}}/"
+                                                                    name="nextSearchForm" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="submit" value=">>" aria-label="Next">
+                                                                </form>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% endif %}
+
+
+                                                            {% if type == "search" %}
+                                                            <!--  判断当前页是否有上一页 -->
+                                                            {% if page.has_previous %}
+                                                            <li class="menu-item menu-item-has-children">
+                                                                <form
+                                                                    action="/problem/search/{{page.previous_page_number}}/"
+                                                                    name="preSearchForm" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="search_range"
+                                                                        value={{ search_range }}>
+                                                                    <input type="hidden" name="search_string"
+                                                                        value={{ search_string }}>
+                                                                    <input type="submit" value="<<"
+                                                                        aria-label="Previous" aria-label="Previous">
+                                                                </form>
+                                                            </li>
+                                                            {% endif %}
+
+                                                            <!--  循环遍历页码列表，并展示到底部 -->
+                                                            {% for num in page.paginator.page_range%}
+                                                            {%if pindex == page.number%}
+                                                            <li class="menu-item menu-item-has-children">
+                                                                <input type="submit" value={{ num }}>
+                                                            </li>
+                                                            {%else%}
+                                                            <li class="menu-item menu-item-has-children">
+                                                                <form action="/problem/search/{{num}}/"
+                                                                    name="indexSearchForm" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="search_range"
+                                                                        value={{ search_range }}>
+                                                                    <input type="hidden" name="search_string"
+                                                                        value={{ search_string }}>
+                                                                    <input type="submit" value={{ num }}>
+                                                                </form>
+                                                            </li>
+                                                            {%endif%}
+                                                            {% endfor %}
+
+                                                            <!--  判断当前页是否有下一页 -->
+                                                            {% if page.has_next %}
+                                                            <li class="menu-item menu-item-has-children">
+                                                                <form
+                                                                    action="/problem/search/{{page.next_page_number}}/"
+                                                                    name="nextSearchForm" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="search_range"
+                                                                        value={{ search_range }}>
+                                                                    <input type="hidden" name="search_string"
+                                                                        value={{ search_string }}>
+                                                                    <input type="submit" value=">>" aria-label="Next">
+                                                                </form>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% endif %}
+
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
                                                 {% else %}
                                                 <p>暂无</p>
 
                                                 {% endif %}
-
 
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
