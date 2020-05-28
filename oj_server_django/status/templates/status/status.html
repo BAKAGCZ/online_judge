@@ -1,169 +1,243 @@
 <html>
 
 <head>
-    <title>OnlineJudege - 提交记录</title>
-    <style type="text/css">
-        h1,
-        h2 {
-            margin: 20px;
-        }
+    <title>OnlineJudge - 提交记录</title>
 
-        a {
-            color: blue;
-            text-decoration: none;
-        }
+    <link rel="stylesheet" type="text/css" href="/static/css/mystylesheet.css">
+    <link rel="stylesheet" href="/static/css/animate.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/default.css">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/responsive.css">
+    <link
+        href='http://fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic'
+        rel='stylesheet' type='text/css'>
 
-        a:hover {
-            color: red;
-            text-decoration: underline;
-        }
-
-        table.menu {
-            text-align: left;
-            margin-left: 15px;
-            width: 600px;
-        }
-    </style>
 </head>
 
-<body>
+<body
+    class="home page page-id-77 page-parent page-template-default custom-background waves-pagebuilder menu-fixed theme-full">
+    <header id=header class="header-large">
+        <div class="container">
+            <div class="show-mobile-menu clearfix">
+                <a href="#mobile-menu" class="mobile-menu-icon">
+                    <span></span><span></span><span></span><span></span>
+                </a>
+            </div>
+            <div class="row header">
+                <div class="col-md-3">
+                    <div class="tw-logo">
+                        <a class="logo" href="/">
+                            <img class="logo-img" src="/static/upload/logo.jpeg" alt="OJLOGO">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav class="menu-container clearfix">
+                        <div class="tw-menu-container">
+                            <ul id="menu" class="sf-menu">
+                                <li class="menu-item menu-item-has-children"><a href="/">主页</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/problem/list">题库</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/status">提交记录</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/problem/submit/0">提交代码</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/user/ranking">排行榜</a></li>
+                                <li class="menu-item menu-item-has-children">
+                                    {% if request.user.username %}
+                                    <a href="/user">用户中心</a>
+                                    {% else %}
+                                    <a href="/user/login">用户中心</a>
+                                    {% endif %}
+                                </li>
+                                <li class="menu-item menu-item-has-children"><a href="/contact">联系我们</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="header-clone">
+    </div>
+    <!-- End Header -->
 
-    <table class="menu">
-        <tr>
-            <th><a href="/">主页</a></th>
-            <th><a href="/problem/list">题库</a></th>
-            <th><a href="/status/">提交记录</a></th>
-            <th><a href="/problem/submit/0/">提交代码</a></th>
-            <th><a href="/user/ranking/">排行榜</a></th>
-            <th>
-                {% if request.user.username %}
-                <a href="/user/">用户中心</a>
-                {% else %}
-                <a href="/user/login/">用户中心</a>
-                {% endif %}
-            </th>
-        </tr>
-    </table>
-    <h1>提交记录</h1>
 
-    <form action="/status/search/" method="post">
-        {% csrf_token %}
+    <section id="main">
+        <div id="page">
 
-        Problem ID:
-        {% if problem_id %}
-        <input type="text" name="problem_id" value="{{ problem_id }}">
-        {% else %}
-        <input type="text" name="problem_id">
-        {% endif %}
+            <div class="row-container light bg-scroll">
+                <div class="waves-container container">
+                    <div class="row">
+                        <div class="col-md-12 ">
+                            <div class="row">
+                                <div class="tw-element waves-heading default left col-md-12 no-bottom">
+                                    <h3 class="heading-title">提交记录<span class="title-seperator"></span></h3>
+                                </div>
+                            </div>
 
-        Username:
-        {% if username %}
-        <input type="text" name="username" value="{{ username }}">
-        {% else %}
-        <input type="text" name="username">
-        {% endif %}
+                            <form role="search" action="/status/search/" method="post" id="searchform">
+                                {% csrf_token %}
 
-        Result:<select name="result">
-            {% if result == "All" %}
-            <option value="All" selected>All</option>
-            {% else %}
-            <option value="All">All</option>
-            {% endif %}
-            {% if result == "Compile Error" %}
-            <option value="Compile Error" selected>Compile Error</option>
-            {% else %}
-            <option value="Compile Error">Compile Error</option>
-            {% endif %}
-            {% if result == "Runtime Error" %}
-            <option value="Runtime Error" selected>Runtime Error</option>
-            {% else %}
-            <option value="Runtime Error">Runtime Error</option>
-            {% endif %}
-            {% if result == "Wrong Answer" %}
-            <option value="Wrong Answer" selected>Wrong Answer</option>
-            {% else %}
-            <option value="Wrong Answer">Wrong Answer</option>
-            {% endif %}
-            {% if result == "Presentation Error" %}
-            <option value="Presentation Error" selected>Presentation Error</option>
-            {% else %}
-            <option value="Presentation Error">Presentation Error</option>
-            {% endif %}
-            {% if result == "Accepted" %}
-            <option value="Accepted" selected>Accepted</option>
-            {% else %}
-            <option value="Accepted">Accepted</option>
-            {% endif %}
-            {% if result == "Time Limit Exceeded" %}
-            <option value="Time Limit Exceeded" selected>Time Limit Exceeded</option>
-            {% else %}
-            <option value="Time Limit Exceeded">Time Limit Exceeded</option>
-            {% endif %}
-            {% if result == "Memory Limit Exceeded" %}
-            <option value="Memory Limit Exceeded" selected>Memory Limit Exceeded</option>
-            {% else %}
-            <option value="Memory Limit Exceeded">Memory Limit Exceeded</option>
-            {% endif %}
-            {% if result == "Output Limit Exceeded" %}
-            <option value="Output Limit Exceeded" selected>Output Limit Exceeded</option>
-            {% else %}
-            <option value="Output Limit Exceeded">Output Limit Exceeded</option>
-            {% endif %}
-        </select>
+                                <div class="row">
+                                    <div class="col-md-3 " style="margin:0px;">
+                                        Problem ID:
+                                        {% if problem_id %}
+                                        <input type="text" name="problem_id" value="{{ problem_id }}">
+                                        {% else %}
+                                        <input type="text" name="problem_id">
+                                        {% endif %}
+                                    </div>
 
-        Language:<select name="lang">
-            {% if lang == "All" %}
-            <option value="All" selected>All</option>
-            {% else %}
-            <option value="All">All</option>
-            {% endif %}
-            {% if lang == "C" %}
-            <option value="C" selected>C</option>
-            {% else %}
-            <option value="C">C</option>
-            {% endif %}
-            {% if lang == "C++" %}
-            <option value="C++" selected>C++</option>
-            {% else %}
-            <option value="C++">C++</option>
-            {% endif %}
-        </select>
-        <input type="submit" value="search">
-        <input type="reset" value="reset">
-    </form>
+                                    <div class="col-md-3 " style="margin:0px;">
+                                        Username:
+                                        {% if username %}
+                                        <input type="text" name="username" value="{{ username }}">
+                                        {% else %}
+                                        <input type="text" name="username">
+                                        {% endif %}
+                                    </div>
 
-    {% if solution_list %}
-    <table border="1" width=100%>
-        <tr>
-            <th>Run Id</th>
-            <th>User</th>
-            <th>Problem</th>
-            <th>Result</th>
-            <th>Memory</th>
-            <th>Time</th>
-            <th>Language</th>
-            <th>Code Length</th>
-            <th>Submit Time</th>
-        </tr>
-        {% for elem in solution_list %}
-        <tr>
-            <td>{{ elem.id }}</td>
-            <td>{{ elem.username }}</td>
-            <td><a href="/problem/{{ elem.problem_id }}/">{{ elem.problem_id }}</a></td>
-            <td>{{ elem.result }}</td>
-            <td>{{ elem.memory }}</td>
-            <td>{{ elem.time }}</td>
-            <td><a href="showsource/{{ elem.id }}/">{{ elem.lang }}</a></td>
-            <td>{{ elem.length }}</td>
-            <td>{{ elem.submitted }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+                                    <div class="col-md-3 " style="margin:0px;">
+                                        Result:<select name="result">
+                                            {% if result == "All" %}
+                                            <option value="All" selected>All</option>
+                                            {% else %}
+                                            <option value="All">All</option>
+                                            {% endif %}
+                                            {% if result == "Compile Error" %}
+                                            <option value="Compile Error" selected>Compile Error</option>
+                                            {% else %}
+                                            <option value="Compile Error">Compile Error</option>
+                                            {% endif %}
+                                            {% if result == "Runtime Error" %}
+                                            <option value="Runtime Error" selected>Runtime Error</option>
+                                            {% else %}
+                                            <option value="Runtime Error">Runtime Error</option>
+                                            {% endif %}
+                                            {% if result == "Wrong Answer" %}
+                                            <option value="Wrong Answer" selected>Wrong Answer</option>
+                                            {% else %}
+                                            <option value="Wrong Answer">Wrong Answer</option>
+                                            {% endif %}
+                                            {% if result == "Presentation Error" %}
+                                            <option value="Presentation Error" selected>Presentation Error</option>
+                                            {% else %}
+                                            <option value="Presentation Error">Presentation Error</option>
+                                            {% endif %}
+                                            {% if result == "Accepted" %}
+                                            <option value="Accepted" selected>Accepted</option>
+                                            {% else %}
+                                            <option value="Accepted">Accepted</option>
+                                            {% endif %}
+                                            {% if result == "Time Limit Exceeded" %}
+                                            <option value="Time Limit Exceeded" selected>Time Limit Exceeded</option>
+                                            {% else %}
+                                            <option value="Time Limit Exceeded">Time Limit Exceeded</option>
+                                            {% endif %}
+                                            {% if result == "Memory Limit Exceeded" %}
+                                            <option value="Memory Limit Exceeded" selected>Memory Limit Exceeded
+                                            </option>
+                                            {% else %}
+                                            <option value="Memory Limit Exceeded">Memory Limit Exceeded</option>
+                                            {% endif %}
+                                            {% if result == "Output Limit Exceeded" %}
+                                            <option value="Output Limit Exceeded" selected>Output Limit Exceeded
+                                            </option>
+                                            {% else %}
+                                            <option value="Output Limit Exceeded">Output Limit Exceeded</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
 
-    {% else %}
-    <p>暂无</p>
+                                    <div class="col-md-3 " style="margin:0px;">
+                                        Language:<select name="lang">
+                                            {% if lang == "All" %}
+                                            <option value="All" selected>All</option>
+                                            {% else %}
+                                            <option value="All">All</option>
+                                            {% endif %}
+                                            {% if lang == "C" %}
+                                            <option value="C" selected>C</option>
+                                            {% else %}
+                                            <option value="C">C</option>
+                                            {% endif %}
+                                            {% if lang == "C++" %}
+                                            <option value="C++" selected>C++</option>
+                                            {% else %}
+                                            <option value="C++">C++</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
 
-    {% endif %}
+                                <div class="row">
+                                    <div class="col-md-8 " style="margin:0px;">
+                                    </div>
+                                    <div class="col-md-2 " style="margin:0px;">
+                                        <input type="submit" value="search">
+                                    </div>
+                                    <div class="col-md-2 " style="margin:0px;">
+                                        <input type="reset" value="reset">
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="row">
+                                <div class="tw-element col-md-12" style="margin-top:0px;">
+                                    <div class="waves-testimonials">
+                                        <div class="testimonial-item clearfix style-default">
+                                            <div class="testimonial-footer clearfix">
+
+                                                {% if solution_list %}
+                                                <table border="1" width=100%>
+                                                    <tr>
+                                                        <th>Run Id</th>
+                                                        <th>User</th>
+                                                        <th>Problem</th>
+                                                        <th>Result</th>
+                                                        <th>Memory</th>
+                                                        <th>Time</th>
+                                                        <th>Language</th>
+                                                        <th>Code Length</th>
+                                                        <th>Submit Time</th>
+                                                    </tr>
+                                                    {% for elem in solution_list %}
+                                                    <tr>
+                                                        <td>{{ elem.id }}</td>
+                                                        <td>{{ elem.username }}</td>
+                                                        <td><a
+                                                                href="/problem/{{ elem.problem_id }}">{{ elem.problem_id }}</a>
+                                                        </td>
+                                                        <td>{{ elem.result }}</td>
+                                                        <td>{{ elem.memory }}</td>
+                                                        <td>{{ elem.time }}</td>
+                                                        <td><a
+                                                                href="/status/showsource/{{ elem.id }}">{{ elem.lang }}</a>
+                                                        </td>
+                                                        <td>{{ elem.length }}</td>
+                                                        <td>{{ elem.submitted }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </table>
+
+                                                {% else %}
+                                                <p>暂无</p>
+
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type='text/javascript' src='/static/js/pace.min.js'></script>
 
 </body>
 

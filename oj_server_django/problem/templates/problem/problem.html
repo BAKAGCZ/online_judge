@@ -1,90 +1,136 @@
 <html>
 
 <head>
-    <title>OnlineJudege - 题目</title>
-    <style type="text/css">
-        h1,
-        h2,
-        p {
-            margin: 20px;
-        }
+    <title>OnlineJudge - 题目</title>
 
-        a {
-            color: blue;
-            text-decoration: none;
-        }
+    <link rel="stylesheet" type="text/css" href="/static/css/mystylesheet.css">
+    <link rel="stylesheet" href="/static/css/animate.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/default.css">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/responsive.css">
+    <link
+        href='http://fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic'
+        rel='stylesheet' type='text/css'>
 
-        a:hover {
-            color: red;
-            text-decoration: underline;
-        }
-
-        table.menu {
-            text-align: left;
-            margin-left: 15px;
-            width: 600px;
-        }
-    </style>
 </head>
 
-<body>
+<body
+    class="home page page-id-77 page-parent page-template-default custom-background waves-pagebuilder menu-fixed theme-full">
+    <header id=header class="header-large">
+        <div class="container">
+            <div class="show-mobile-menu clearfix">
+                <a href="#mobile-menu" class="mobile-menu-icon">
+                    <span></span><span></span><span></span><span></span>
+                </a>
+            </div>
+            <div class="row header">
+                <div class="col-md-3">
+                    <div class="tw-logo">
+                        <a class="logo" href="/">
+                            <img class="logo-img" src="/static/upload/logo.jpeg" alt="OJLOGO">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav class="menu-container clearfix">
+                        <div class="tw-menu-container">
+                            <ul id="menu" class="sf-menu">
+                                <li class="menu-item menu-item-has-children"><a href="/">主页</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/problem/list">题库</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/status">提交记录</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/problem/submit/0">提交代码</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/user/ranking">排行榜</a></li>
+                                <li class="menu-item menu-item-has-children">
+                                    {% if request.user.username %}
+                                    <a href="/user">用户中心</a>
+                                    {% else %}
+                                    <a href="/user/login">用户中心</a>
+                                    {% endif %}
+                                </li>
+                                <li class="menu-item menu-item-has-children"><a href="/contact">联系我们</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="header-clone">
+    </div>
+    <!-- End Header -->
 
-    <table class="menu">
-        <tr>
-            <th><a href="/">主页</a></th>
-            <th><a href="/problem/list">题库</a></th>
-            <th><a href="/status/">提交记录</a></th>
-            <th><a href="/problem/submit/0/">提交代码</a></th>
-            <th><a href="/user/ranking/">排行榜</a></th>
-            <th>
-                {% if request.user.username %}
-                <a href="/user/">用户中心</a>
-                {% else %}
-                <a href="/user/login/">用户中心</a>
-                {% endif %}
-            </th>
-        </tr>
-    </table>
+
+    <section id="main">
+        <div id="page">
+
+            <div class="row-container light bg-scroll">
+                <div class="waves-container container">
+                    <div class="row">
+                        <div class="col-md-12 ">
+                            <div class="row">
+                                <div class="tw-element col-md-12">
+                                    <div class="waves-testimonials">
+                                        <div class="testimonial-item clearfix style-default">
+                                            <div class="testimonial-footer clearfix">
+
+                                                {% if problem_list %}
+                                                {% if problem_id %}
+                                                {% for elem in problem_list %}
+                                                {% if elem.id == problem_id %}
+                                                <br>
+                                                <h2>题目{{ elem.id }}.&nbsp;&nbsp;{{ elem.title }}</h2>
+                                                <p style="font-size: 13px;">
+                                                    时间限制：{{ elem.time_limit }}&nbsp;&nbsp;
+                                                    内存限制：{{ elem.memory_limit }}&nbsp;&nbsp;
+                                                    解题得分：{{ elem.point }}
+                                                </p>
+                                                <p>
+                                                    <br>
+                                                    <hr>
+                                                    <br>
+                                                    <b>题目描述</b>
+                                                <pre>{{ elem.description }}</pre>
+                                                <b>输入格式</b>
+                                                <pre>{{ elem.input_format }}</pre>
+                                                <b>输出格式</b>
+                                                <pre>{{ elem.output_format }}</pre>
+                                                <b>输入样例</b>
+                                                <pre>{{ elem.sample_input }}</pre>
+                                                <b>输出样例</b>
+                                                <pre>{{ elem.sample_output }}</pre>
+                                                <b>提示</b>
+                                                <pre>{{ elem.hint }}</pre>
+                                                <p style="font-size: 15px;"><b>题目来源</b>&nbsp;
+                                                    <a href="{{ elem.source }}">{{ elem.source }}</a></p>
+                                                <p style="font-size: 20px;">[<a
+                                                        href="../submit/{{ elem.id }}">Submit</a>]</p>
+                                                <br>
+                                                <hr>
+                                                <br>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endif %}
+                                                {% endif %}
+                                                </p>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type='text/javascript' src='/static/js/pace.min.js'></script>
 
 
-    {% if problem_list %}
-    {% if problem_id %}
-    {% for elem in problem_list %}
-    {% if elem.id == problem_id %}
-    <br>
-    <h2>题目{{ elem.id }}.{{ elem.title }}</h2>
-    <p style="font-size: 13px;">
-        时间限制：{{ elem.time_limit }}&nbsp;&nbsp;
-        内存限制：{{ elem.memory_limit }}&nbsp;&nbsp;
-        解题得分：{{ elem.point }}
-    </p>
-    <p>
-        <br>
-        <hr>
-        <br>
-        <b>题目描述</b>
-        <pre>{{ elem.description }}</pre>
-        <b>输入格式</b>
-        <pre>{{ elem.input_format }}</pre>
-        <b>输出格式</b>
-        <pre>{{ elem.output_format }}</pre>
-        <b>输入样例</b>
-        <pre>{{ elem.sample_input }}</pre>
-        <b>输出样例</b>
-        <pre>{{ elem.sample_output }}</pre>
-        <b>提示</b>
-        <pre>{{ elem.hint }}</pre>
-        <p style="font-size: 13px;"><b>题目来源</b>&nbsp;
-            <a href="{{ elem.source }}">{{ elem.source }}</a></p>
-        <p>[<a href="../submit/{{ elem.id }}">Submit</a>]</p>
-        <br>
-        <hr>
-        <br>
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-        {% endif %}
-    </p>
+
 </body>
 
 </html>

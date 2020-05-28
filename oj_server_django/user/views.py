@@ -51,10 +51,23 @@ def registerhandler(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+    if username == None or username == "":
+        context = {'msg': "注册失败！请重试"}
+        return render(request, 'index/error.html', context=context)
+    if len(username) > 50:
+        context = {'msg': "用户名过长，请重试！"}
+        return render(request, 'index/error.html', context=context)
+    if len(password) > 50:
+        context = {'msg': "密码过长，请重试！"}
+        return render(request, 'index/error.html', context=context)
+    if len(password) < 6:
+        context = {'msg': "密码过短，请重试！"}
+        return render(request, 'index/error.html', context=context)
     User = get_user_model()
     if User.objects.filter(username=username).exists():
         context = {'msg': "用户名已存在，请重试！"}
         return render(request, 'index/error.html', context=context)
     User.objects.create_user(
         username=username, password=password, point=0, attempt_number=0, solved_number=0)
-    return HttpResponse("注册成功！<a href='/'>回到主页</a>")
+    context = {'msg': "注册成功！"}
+    return render(request, 'index/msg.html', context=context)

@@ -1,5 +1,17 @@
 from django.shortcuts import render
 from .models import Problem
+# from django.core.paginator import Paginator
+
+# def problemlist(request):
+#     problem_list = Problem.objects.all()
+#     paginator = Paginator(problem_list, 5)
+#     if pindex == "":  # django默认返回空值，设置默认值1
+#         pindex = 1
+#     else:  # 如果有返回值，把返回值转为整数型
+#         int(pindex)
+#     page = paginator.page(pindex)  # 传递当前页的实例对象到前端
+#     context = {'page': page}
+#     return render(request, 'problem/list.html', context=context)
 
 
 def problemlist(request):
@@ -17,7 +29,8 @@ def search(request):
         if search_range == "problem_id":
             problemResObj = problemResObj.filter(id=search_string)
         if search_range == "title":
-            problemResObj = problemResObj.filter(title=search_string)
+            problemResObj = problemResObj.filter(
+                title__icontains=search_string)
         if search_range == "point":
             problemResObj = problemResObj.filter(point=search_string)
         context = {'problem_list': problemResObj,

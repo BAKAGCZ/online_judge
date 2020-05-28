@@ -15,6 +15,9 @@ def submithandler(request):
     username = request.user.username
 
     if request.method == 'POST':
+        # problemResObj = Problem.objects
+        # if problem_id != 0:
+        #     solutionResObj = solutionResObj.filter(problem_id=problem_id)
         problem_id_int = int(request.POST['problem_id'])
         problem_id = str(problem_id_int)
         lang = request.POST['lang']
@@ -26,8 +29,12 @@ def submithandler(request):
         context = {'msg': "题目不存在！"}
         return render(request, 'index/error.html', context=context)
     problem = Problem.objects.get(id=problem_id)
+    time_limit = problem.time_limit
+    memory_limit = problem.memory_limit
 
-    if username == None or username == "" or problem_id == None or problem_id == "" or lang == None or lang == "" or code == None or code == "":
+    if username == None or username == "":
+        return render(request, 'user/login.html')
+    elif problem_id == None or problem_id == "" or lang == None or lang == "" or code == None or code == "":
         context = {'msg': "数据无效！"}
         return render(request, 'index/error.html', context=context)
     else:
@@ -37,10 +44,12 @@ def submithandler(request):
             "Code": code,
             "Submitted": submitted,
             "Lang": lang,
+            "TimeLimit": time_limit,
+            "MemoryLimit": memory_limit,
         }
 
         try:
-            address = "ws://127.0.0.1:8888/websocket"
+            address = "ws://127.0.0.1:8886/websocket"
             ws = create_connection(address)
             ws.send(json.dumps(send_params))  # 将字典形式的数据转化为字符串
             # print("Sent")
@@ -56,16 +65,17 @@ def submithandler(request):
             solution.length = recv_params['Length']
             solution.submitted = recv_params['Submitted']
             solution.code = recv_params['Code']
-            solution.save()
 
             User = get_user_model()
             user = User.objects.get(username=username)
             if solution.result == "Accepted":
-                user.point += problem.point
-                user.attempt_number += 1
-                user.solved_number += 1
-            else:
-                user.attempt_number += 1
+                # 没解决过
+                if not Solution.objects.filter(username=username, problem_id=problem_id, result=solution.result).exists():
+                    user.point += problem.point
+                    user.solved_number += 1
+            user.attempt_number += 1
+
+            solution.save()
             user.save()
 
             # print("Received: "+recv_params['Result'])

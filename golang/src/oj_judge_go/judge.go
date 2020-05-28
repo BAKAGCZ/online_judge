@@ -11,16 +11,47 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
-
+	"strings"
 	"golang.org/x/net/websocket"
+	/*
+	// "context"
+	"io"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+    "github.com/docker/docker/api/types/mount"
+	"github.com/docker/docker/client"
+    "github.com/docker/go-connections/nat"
+    "golang.org/x/net/context"
+	// "github.com/docker/docker/pkg/stdcopy"
+	*/
+)	
+
+// cmd := exec.Command("docker", "run", "-it", "-v", "~/golang/src/oj_judge_go:/judgeFile oj/myalpine")
+
+/*
+const (
+    imageName     string   = "oj/myalpine"				  //镜像名称
+    containerName string   = "myalpine"			//容器名称
+    indexName     string   = "/" + containerName	  //容器索引名称，用于检查该容器是否存在是使用
+    cmd           string   = "./judging/4_root_2020-05-09 22:59:00.e"         //运行的cmd命令，用于启动container中的程序
+    workDir       string   = "/judgeFile"		 			   //container工作目录
+    openPort      nat.Port = "7070"							  //container开放端口
+    hostPort      string   = "7070"								//container映射到宿主机的端口
+    containerDir  string   = "/judgeFile"					  //容器挂在目录
+    hostDir       string   = "~/golang/src/oj_judge_go" //容器挂在到宿主机的目录
+    n             int      = 5                         		           //每5s检查一个容器是否在运行
+ 
 )
+*/
 
 type SubmittedData struct {
 	Username  string
 	ProblemID string
 	Result    string // 处理返回
 	Memory    string // 处理返回
+	MemoryLimit string
 	Time      string // 处理返回
+	TimeLimit string
 	Lang      string
 	Length    string // 处理返回
 	Submitted string
@@ -30,7 +61,7 @@ type SubmittedData struct {
 func main() {
 	/* 接收代码数据 */
 	http.Handle("/websocket", websocket.Handler(SubmittedDataHandler))
-	err := http.ListenAndServe("127.0.0.1:8888", nil)
+	err := http.ListenAndServe("127.0.0.1:8886", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,6 +80,7 @@ func SubmittedDataHandler(w *websocket.Conn) {
 			fmt.Println("0. 不能接收消息,error=", error)
 			break
 		}
+		
 
 		// 1.能接收消息
 		fmt.Println("1. 接收消息：", submittedDataJson)
@@ -56,7 +88,9 @@ func SubmittedDataHandler(w *websocket.Conn) {
 		Username := submittedData.Username
 		ProblemID := submittedData.ProblemID
 		Result := ""
+		MemoryLimit := submittedData.MemoryLimit
 		Memory := ""
+		TimeLimit := submittedData.TimeLimit
 		Time := ""
 		Lang := submittedData.Lang
 		Length := strconv.Itoa(len(submittedData.Code)) + "B"
@@ -78,10 +112,8 @@ func SubmittedDataHandler(w *websocket.Conn) {
 			} else {
 				fmt.Println("[write result]: success")
 				// 2.2判断正误
-				start := time.Now()
-				judgeResult := JudgCmd(ProblemID, Username, Submitted, Lang)
-				cost := time.Since(start)
-				fmt.Println("!!!!!!!!!!!!!cost=[%s]", cost)
+				judgeResult := ""
+				judgeResult, Time, Memory = JudgCmd(ProblemID, Username, Submitted, Lang, TimeLimit, MemoryLimit)
 
 				fmt.Println("[judge result]: " + judgeResult)
 				Result = judgeResult
@@ -91,7 +123,7 @@ func SubmittedDataHandler(w *websocket.Conn) {
 		// 3.发送消息
 		//连接的话 只能是 string类型的
 		params := SubmittedData{Username, ProblemID, Result,
-			Memory, Time, Lang, Length, Submitted, Code}
+			Memory, MemoryLimit, Time, TimeLimit, Lang, Length, Submitted, Code}
 
 		returnData, _ := json.Marshal(params)
 		fmt.Println("3. 发给客户端：" + string(returnData))
@@ -146,49 +178,77 @@ func DeleteSourceFile(ProblemID string, Username string, Submitted string, Lang 
 }
 
 /* 2.判断正误 */
-func JudgCmd(ProblemID string, Username string, Submitted string, Lang string) (result string) {
+func JudgCmd(ProblemID string, Username string, Submitted string, Lang string, TimeLimit string, MemoryLimit string) (result string, costTime string, costMemory string) {
 	sourceFilename, exeFilename, outFilename := GetFilename(ProblemID, Username, Submitted, Lang)
 	stinputFilename, stoutputFilename := GetStioFilename(ProblemID)
 
-	res := JudgeCE(sourceFilename, exeFilename, Lang)
+	res := 0
+	costMemory = ""
+	start := time.Now()
+
+	// CE RE TLE MLE
+	// res = JudgeWithDocker(sourceFilename, exeFilename, outFilename, stinputFilename, Lang)
+
+	res = JudgeCE(sourceFilename, exeFilename, Lang)
 	if res != 0 {
 		if res == 1 {
-			return "Compile Error"
+			return "Compile Error", "", ""
 		} else { // System Error: [language error] or [Compile CMD Error]
-			return "System Error"
-		}
-	}
-	res = JudgeRE(exeFilename, outFilename, stinputFilename)
-	if res != 0 {
-		if res == 1 {
-			return "Runtime Error"
-		} else { // System Error: [Runtime CMD Error]
-			return "System Error"
+			return "System Error", "", ""
 		}
 	}
 
+	res = JudgeRE(exeFilename, outFilename, stinputFilename)
+	if res != 0 {
+		if res == 1 {
+			return "Runtime Error", "", ""
+		} else { // System Error: [Runtime CMD Error]
+			return "System Error", "", ""
+		}
+	}
+
+	duration := time.Since(start)
+	durationMilliSeconds := duration.Nanoseconds()/1e6
+	costTimeString := strconv.FormatInt(durationMilliSeconds, 10)
+	costTimeInt, _ := strconv.Atoi(costTimeString)
+	costTime = costTimeString+"MS"
+
+	limitTimeArray := strings.Split(TimeLimit, "MS")
+	limitTimeString := limitTimeArray[0]
+	limitTimeInt, _ := strconv.Atoi(limitTimeString)
+	// limitTimeInt -= 950
+	
+	if costTimeInt > limitTimeInt { // Time Limit Error
+		// fmt.Println("!!!! costTimeInt:", costTimeInt, "...limitTimeInt:", limitTimeInt)
+		return "Time Limit Error", "", ""
+	}
+	// fmt.Println("...costTimeString:", costTimeString, "...limitTimeString:", limitTimeString)
+	
+
+	
 	res = JudgeWAandOLE(outFilename, stoutputFilename)
 	if res != 0 {
 		if res == 1 {
-			return "Wrong Answer"
+			return "Wrong Answer", "", ""
 		} else if res == 2 {
-			return "Output Limit Exceeded"
+			return "Output Limit Exceeded", "", ""
 		} else { // System Error: [can't get file size] or [Wrong Answer CMD Error]
-			return "System Error"
+			return "System Error", "", ""
 		}
 	}
 
 	res = JudgePE(outFilename, stoutputFilename)
 	if res != 0 {
 		if res == 1 {
-			return "Presentation Error"
+			return "Presentation Error", "", ""
 		} else { // System Error: [Presentation CMD Error]
-			return "System Error"
+			return "System Error", "", ""
 		}
 	}
 
-	return "Accepted"
+	return "Accepted", costTime, costMemory
 }
+
 
 /* 2.1 调用命令行，编译代码文件 */
 func JudgeCE(sourceFilename string, exeFilename string, Lang string) (res int) {
@@ -229,11 +289,13 @@ func JudgeRE(exeFilename string, outFilename string, stinputFilename string) (re
 	if err != nil { // or System Error: [Runtime CMD Error]
 		return 2
 	}
+
 	//等待完成
 	err = cmd.Wait()
 	if err != nil { // Judge Result: [Runtime Error] 运行错误
 		return 1
 	}
+
 	return 0 // Continue
 }
 
@@ -241,7 +303,7 @@ func JudgeRE(exeFilename string, outFilename string, stinputFilename string) (re
 func JudgeWAandOLE(outFilename string, stoutputFilename string) (res int) {
 	outFileSize := GetFileSize(outFilename)
 	stoutputFileSize := GetFileSize(stoutputFilename)
-	fmt.Println("#### Output Size: ", stoutputFileSize, " ... ", outFileSize)
+	// fmt.Println("#### Output Size: ", stoutputFileSize, " ... ", outFileSize)
 	if stoutputFileSize == 0 || outFileSize == 0 {
 		return 3 // System Error: can't get file size
 	}
@@ -314,3 +376,153 @@ func GetFileSize(filename string) (result int64) {
 	})
 	return result
 }
+
+
+/*
+func JudgeWithDocker(sourceFilename string, exeFilename string, outFilename string, stinputFilename string, Lang string) (res int){
+
+    ctx := context.Background()
+    cli, err := client.NewEnvClient()
+    defer cli.Close()
+    if err != nil {
+        panic(err)
+    }
+    checkAndStartContainer(ctx, cli)
+	return 1;
+}
+
+
+//创建容器
+func createContainer(ctx context.Context, cli *client.Client) {
+    //创建容器
+    cont, err := cli.ContainerCreate(ctx, &container.Config{
+        Image:      imageName,     //镜像名称
+        Tty:        true,          //docker run命令中的-t选项
+        OpenStdin:  true,          //docker run命令中的-i选项
+        Cmd:        []string{cmd}, //docker 容器中执行的命令
+        WorkingDir: workDir,       //docker容器中的工作目录
+        ExposedPorts: nat.PortSet{
+            openPort: struct{}{}, //docker容器对外开放的端口
+        },
+    }, &container.HostConfig{
+        PortBindings: nat.PortMap{
+            openPort: []nat.PortBinding{nat.PortBinding{
+                HostIP:   "0.0.0.0", //docker容器映射的宿主机的ip
+                HostPort: hostPort,  //docker 容器映射到宿主机的端口
+            }},
+        },
+        Mounts: []mount.Mount{ //docker 容器目录挂在到宿主机目录
+            mount.Mount{
+                Type:   mount.TypeBind,
+                Source: hostDir,
+                Target: containerDir,
+            },
+        },
+    }, nil, containerName)
+    if err == nil {
+        log.Printf("success create container:%s\n", cont.ID)
+    } else {
+        log.Println("failed to create container!!!!!!!!!!!!!")
+    }
+}
+
+
+//启动容器
+func startContainer(ctx context.Context, containerID string, cli *client.Client) error {
+    err := cli.ContainerStart(ctx, containerID, types.ContainerStartOptions{})
+    if err == nil {
+        log.Printf("success start container:%s\n", containerID)
+    } else {
+        log.Printf("failed to start container:%s!!!!!!!!!!!!!\n", containerID)
+    }
+    return err
+}
+ 
+//将容器的标准输出输出到控制台中
+func printConsole(ctx context.Context, cli *client.Client, id string) {
+    //将容器的标准输出显示出来
+    out, err := cli.ContainerLogs(ctx, id, types.ContainerLogsOptions{ShowStdout: true})
+    if err != nil {
+        panic(err)
+    }
+    io.Copy(os.Stdout, out)
+ 
+    //容器内部的运行状态
+    status, err := cli.ContainerStats(ctx, id, true)
+    if err != nil {
+        panic(err)
+    }
+    io.Copy(os.Stdout, status.Body)
+}
+ 
+//检查容器是否存在并启动容器
+func checkAndStartContainer(ctx context.Context, cli *client.Client) {
+    for {
+        select {
+        case <-isRuning(ctx, cli):
+            //该container没有在运行
+            //获取所有的container查看该container是否存在
+            contTemp := getContainer(ctx, cli, true)
+            if contTemp.ID == "" {
+                //该容器不存在，创建该容器
+                log.Printf("the container name[%s] is not exists!!!!!!!!!!!!!\n", containerName)
+                createContainer(ctx, cli)
+            } else {
+                //该容器存在，启动该容器
+                log.Printf("the container name[%s] is exists\n", containerName)
+                startContainer(ctx, contTemp.ID, cli)
+            }
+ 
+        }
+    }
+}
+ 
+//获取container
+func getContainer(ctx context.Context, cli *client.Client, all bool) types.Container {
+    containerList, err := cli.ContainerList(ctx, types.ContainerListOptions{All: all})
+    if err != nil {
+        panic(err)
+    }
+    var contTemp types.Container
+    //找出名为“mygin-latest”的container并将其存入contTemp中
+    for _, v1 := range containerList {
+        for _, v2 := range v1.Names {
+            if v2 == indexName {
+                contTemp = v1
+                break
+            }
+        }
+    }
+    return contTemp
+}
+ 
+//容器是否正在运行
+func isRuning(ctx context.Context, cli *client.Client) <-chan bool {
+    isRun := make(chan bool)
+    var timer *time.Ticker
+    go func(ctx context.Context, cli *client.Client) {
+        for {
+            //每n s检查一次容器是否运行
+ 
+            timer = time.NewTicker(time.Duration(n) * time.Second)
+            select {
+            case <-timer.C:
+                //获取正在运行的container list
+                log.Printf("%s is checking the container[%s]is Runing??", os.Args[0], containerName)
+                contTemp := getContainer(ctx, cli, false)
+                if contTemp.ID == "" {
+                    log.Print(":NO")
+                    //说明container没有运行
+                    isRun <- true
+                } else {
+                    log.Print(":YES")
+                    //说明该container正在运行
+                    go printConsole(ctx, cli, contTemp.ID)
+                }
+            }
+ 
+        }
+    }(ctx, cli)
+    return isRun
+}
+*/

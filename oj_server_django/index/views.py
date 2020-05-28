@@ -8,3 +8,7 @@ def index(request):
 def error(request, msg):
     context = {"msg": msg}
     return render(request, 'index/error.html', context=context)
+
+
+def contact(request):
+    return render(request, 'index/contact.html')
