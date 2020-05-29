@@ -39,9 +39,9 @@
                             <ul id="menu" class="sf-menu">
                                 <li class="menu-item menu-item-has-children"><a href="/">主页</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/list/1">题库</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/status">提交记录</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/status/1">提交记录</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/submit/0">提交代码</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/user/ranking">排行榜</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/user/ranking/1">排行榜</a></li>
                                 <li class="menu-item menu-item-has-children">
                                     {% if request.user.username %}
                                     <a href="/user">用户中心</a>
@@ -67,61 +67,52 @@
 
             <div class="row-container light bg-scroll">
                 <div class="waves-container container">
+
                     <div class="row">
-                        <div class="col-md-12 ">
-                            <div class="row">
-                                <div class="tw-element col-md-12">
-                                    <div class="waves-testimonials">
-                                        <div class="testimonial-item clearfix style-default">
-                                            <div class="testimonial-footer clearfix">
+                        <div class="col-md-12">
 
-                                                {% if problem_list %}
-                                                {% if problem_id %}
-                                                {% for elem in problem_list %}
-                                                {% if elem.id == problem_id %}
-                                                <br>
-                                                <h2>题目{{ elem.id }}.&nbsp;&nbsp;{{ elem.title }}</h2>
-                                                <p style="font-size: 13px;">
-                                                    时间限制：{{ elem.time_limit }}&nbsp;&nbsp;
-                                                    内存限制：{{ elem.memory_limit }}&nbsp;&nbsp;
-                                                    解题得分：{{ elem.point }}
-                                                </p>
-                                                <p>
-                                                    <br>
-                                                    <hr>
-                                                    <br>
-                                                    <b>题目描述</b>
-                                                <pre>{{ elem.description }}</pre>
-                                                <b>输入格式</b>
-                                                <pre>{{ elem.input_format }}</pre>
-                                                <b>输出格式</b>
-                                                <pre>{{ elem.output_format }}</pre>
-                                                <b>输入样例</b>
-                                                <pre>{{ elem.sample_input }}</pre>
-                                                <b>输出样例</b>
-                                                <pre>{{ elem.sample_output }}</pre>
-                                                <b>提示</b>
-                                                <pre>{{ elem.hint }}</pre>
-                                                <p style="font-size: 15px;"><b>题目来源</b>&nbsp;
-                                                    <a href="{{ elem.source }}">{{ elem.source }}</a></p>
-                                                <p style="font-size: 20px;">[<a
-                                                        href="../submit/{{ elem.id }}">Submit</a>]</p>
-                                                <br>
-                                                <hr>
-                                                <br>
-                                                {% endif %}
-                                                {% endfor %}
-                                                {% endif %}
-                                                {% endif %}
-                                                </p>
+                            {% if problem_list %}
+                            {% if problem_id %}
+                            {% for elem in problem_list %}
+                            {% if elem.id == problem_id %}
+                            <br>
+                            <h2>题目{{ elem.id }}.&nbsp;&nbsp;{{ elem.title }}</h2>
+                            <p style="font-size: 13px;">
+                                时间限制：{{ elem.time_limit }}&nbsp;&nbsp;
+                                内存限制：{{ elem.memory_limit }}&nbsp;&nbsp;
+                                解题得分：{{ elem.point }}
+                            </p>
+                            <p>
+                                <br>
+                                <hr>
+                                <br>
+                                <b>题目描述</b>
+                            <pre>{{ elem.description }}</pre>
+                            <b>输入格式</b>
+                            <pre>{{ elem.input_format }}</pre>
+                            <b>输出格式</b>
+                            <pre>{{ elem.output_format }}</pre>
+                            <b>输入样例</b>
+                            <pre>{{ elem.sample_input }}</pre>
+                            <b>输出样例</b>
+                            <pre>{{ elem.sample_output }}</pre>
+                            <b>提示</b>
+                            <pre>{{ elem.hint }}</pre>
+                            <p style="font-size: 15px;"><b>题目来源</b>&nbsp;
+                                <a href="{{ elem.source }}">{{ elem.source }}</a></p>
+                            <p style="font-size: 20px;">[<a href="../submit/{{ elem.id }}">Submit</a>]</p>
+                            <br>
+                            <hr>
+                            <br>
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                            {% endif %}
+                            </p>
 
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

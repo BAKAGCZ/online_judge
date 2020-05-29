@@ -39,9 +39,9 @@
                             <ul id="menu" class="sf-menu">
                                 <li class="menu-item menu-item-has-children"><a href="/">主页</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/list/1">题库</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/status">提交记录</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/status/1">提交记录</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/submit/0">提交代码</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/user/ranking">排行榜</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/user/ranking/1">排行榜</a></li>
                                 <li class="menu-item menu-item-has-children">
                                     {% if request.user.username %}
                                     <a href="/user">用户中心</a>
@@ -77,38 +77,32 @@
                             </div>
 
                             <div class="row">
-                                <div class="tw-element col-md-12">
-                                    <div class="waves-testimonials">
-                                        <div class="testimonial-item clearfix style-default">
-                                            <div class="testimonial-footer clearfix">
+                                <div class="col-md-12">
+                                    <table>
+                                        <form action="/user/loginhandler/" method="POST">
+                                            {% csrf_token %}
+                                            <tr>
+                                                <th>用户名：</th>
+                                                <td><input type="text" name="username"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>密码：</th>
+                                                <td><input type="password" name="password"></td>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <td>
+                                                    <input type="submit" name="submit" value="登录">&nbsp;
+                                                    <input type="reset" name="reset" value="重置">&nbsp;
+                                                    <a href="/user/register">注册</a>
+                                                </td>
+                                            </tr>
+                                        </form>
+                                    </table>
 
-                                                <table>
-                                                    <form action="/user/loginhandler/" method="POST">
-                                                        {% csrf_token %}
-                                                        <tr>
-                                                            <th>用户名：</th>
-                                                            <td><input type="text" name="username"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>密码：</th>
-                                                            <td><input type="password" name="password"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th></th>
-                                                            <td>
-                                                                <input type="submit" name="submit" value="登录">&nbsp;
-                                                                <input type="reset" name="reset" value="重置">&nbsp;
-                                                                <a href="/user/register">注册</a>
-                                                            </td>
-                                                        </tr>
-                                                    </form>
-                                                </table>
-
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

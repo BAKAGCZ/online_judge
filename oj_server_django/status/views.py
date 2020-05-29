@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from django.urls import reverse
+# from django.urls import reverse
 # from django.http import HttpResponseRedirect
 from websocket import create_connection
 from problem.models import Problem
@@ -8,6 +8,7 @@ from .models import Solution
 from django.contrib.auth import get_user_model
 import datetime
 import json
+from django.core.paginator import Paginator
 
 
 def submithandler(request):
@@ -17,7 +18,7 @@ def submithandler(request):
     if request.method == 'POST':
         # problemResObj = Problem.objects
         # if problem_id != 0:
-        #     solutionResObj = solutionResObj.filter(problem_id=problem_id)
+        #     solution_res_obj = solution_res_obj.filter(problem_id=problem_id)
         problem_id_int = int(request.POST['problem_id'])
         problem_id = str(problem_id_int)
         lang = request.POST['lang']
@@ -85,11 +86,18 @@ def submithandler(request):
             context = {'msg': "连接失败，请联系管理员！\n"+e}
             return render(request, 'index/error.html', context=context)
 
-    return redirect(reverse('status'))
+    return redirect('/status/1')
 
 
-def status(request):
-    context = {'solution_list': Solution.objects.order_by("-submitted")}
+def status(request, pindex):
+    solution_list = Solution.objects.all().order_by("-submitted")
+    paginator = Paginator(solution_list, 10)
+    if pindex == "":  # django默认返回空值，设置默认值1
+        pindex = 1
+    else:  # 如果有返回值，把返回值转为整数型
+        int(pindex)
+    page = paginator.page(pindex)  # 传递当前页的实例对象到前端
+    context = {'page': page, 'type': 'list'}
     request.encoding = 'utf-8'
     return render(request, 'status/status.html', context=context)
 
@@ -102,29 +110,37 @@ def showsource(request, solution_id):
     return render(request, 'status/showsource.html', context=context)
 
 
-def search(request):
+def search(request, pindex):
     if request.method == 'POST':
         problem_id = int("0"+request.POST.get('problem_id'))
         username = request.POST.get('username')
         result = request.POST.get('result')
         lang = request.POST.get('lang')
 
-    solutionResObj = Solution.objects
+    solution_res_obj = Solution.objects
     if problem_id != 0:
-        solutionResObj = solutionResObj.filter(problem_id=problem_id)
+        solution_res_obj = solution_res_obj.filter(problem_id=problem_id)
     if username != "":
-        solutionResObj = solutionResObj.filter(username=username)
+        solution_res_obj = solution_res_obj.filter(username=username)
     if result != "All":
-        solutionResObj = solutionResObj.filter(result=result)
+        solution_res_obj = solution_res_obj.filter(result=result)
     if lang != "All":
-        solutionResObj = solutionResObj.filter(lang=lang)
-    solutionResObj = solutionResObj.order_by("-submitted")
+        solution_res_obj = solution_res_obj.filter(lang=lang)
+    solution_res_obj = solution_res_obj.order_by("-submitted")
+
+    paginator = Paginator(solution_res_obj, 10)
+    if pindex == "":  # django默认返回空值，设置默认值1
+        pindex = 1
+    else:  # 如果有返回值，把返回值转为整数型
+        int(pindex)
+    page = paginator.page(pindex)  # 传递当前页的实例对象到前端
     context = {
-        'solution_list': solutionResObj,
+        'page': page,
+        'type': 'search',
         'problem_id': problem_id,
         'username': username,
         'result': result,
         'lang': lang
     }
-
+    request.encoding = 'utf-8'
     return render(request, 'status/status.html', context=context)

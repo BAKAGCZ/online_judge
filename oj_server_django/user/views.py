@@ -4,20 +4,29 @@ from django.http import HttpResponse
 from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 
 
 def userinfo(request):
     user = request.user
-    Users = get_user_model()
-    point_total = Users.objects.get(username=user.username).point
-    rank = Users.objects.filter(point__gt=point_total).count()+1
+    users = get_user_model()
+    point_total = users.objects.get(username=user.username).point
+    rank = users.objects.filter(point__gt=point_total).count()+1
     context = {'user': user, 'rank': rank}
     return render(request, 'user/info.html', context=context)
 
 
-def ranking(request):
+def ranking(request, pindex):
     User = get_user_model()
-    context = {'user': User.objects.order_by("-point")[0:100]}
+    user_list = User.objects.order_by("-point")
+    paginator = Paginator(user_list, 5)
+    if pindex == "":  # django默认返回空值，设置默认值1
+        pindex = 1
+    else:  # 如果有返回值，把返回值转为整数型
+        int(pindex)
+    page = paginator.page(pindex)  # 传递当前页的实例对象到前端
+    context = {'page': page, 'type': 'list'}
+    request.encoding = 'utf-8'
     return render(request, 'user/ranking.html', context=context)
 
 

@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 
 def problemlist(request, pindex):
     problem_list = Problem.objects.all()
-    paginator = Paginator(problem_list, 1)
+    paginator = Paginator(problem_list, 10)
     if pindex == "":  # django默认返回空值，设置默认值1
         pindex = 1
     else:  # 如果有返回值，把返回值转为整数型
@@ -32,15 +32,21 @@ def search(request, pindex):
                 title__icontains=search_string)
         if search_range == "point":
             problem_res_obj = problem_res_obj.filter(point=search_string)
+    else:
+        problem_res_obj = problem_res_obj.all()
 
-    paginator = Paginator(problem_res_obj, 1)
+    paginator = Paginator(problem_res_obj, 10)
     if pindex == "":  # django默认返回空值，设置默认值1
         pindex = 1
     else:  # 如果有返回值，把返回值转为整数型
         int(pindex)
     page = paginator.page(pindex)  # 传递当前页的实例对象到前端
-    context = {'page': page, 'type': 'search',
-               'search_range': search_range, 'search_string': search_string}
+    context = {
+        'page': page,
+        'type': 'search',
+        'search_range': search_range,
+        'search_string': search_string
+    }
     return render(request, 'problem/list.html', context=context)
 
 

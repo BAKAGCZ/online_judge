@@ -39,9 +39,9 @@
                             <ul id="menu" class="sf-menu">
                                 <li class="menu-item menu-item-has-children"><a href="/">主页</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/list/1">题库</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/status">提交记录</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/status/1">提交记录</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/submit/0">提交代码</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/user/ranking">排行榜</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/user/ranking/1">排行榜</a></li>
                                 <li class="menu-item menu-item-has-children">
                                     {% if request.user.username %}
                                     <a href="/user">用户中心</a>
@@ -66,37 +66,43 @@
         <div id="page">
             <div class="row-container light bg-scroll">
                 <div class="waves-container container">
-
-                    <div class="row">
-                        <div class="tw-element waves-heading default left col-md-12 no-bottom">
-                            <h3 class="heading-title">源代码<span class="title-seperator"></span></h3>
-                        </div>
-                    </div>
-
                     <div class="row">
                         <div class="col-md-12 ">
-                            {% if solution_list %}
-                            {% if solution_id %}
-                            {% for elem in solution_list %}
-                            {% if elem.id == solution_id %}
-                            <p style="font-size: 13px;">
-                                题目编号：<a href="/problem/{{ elem.problem_id }}">{{ elem.problem_id }}</a>&nbsp;&nbsp;
-                                用户名：{{ elem.username }}&nbsp;&nbsp;
-                                <br>
-                                使用内存：{{ elem.memory }}&nbsp;&nbsp;
-                                使用时间：{{ elem.time }}&nbsp;&nbsp;
-                                <br>
-                                编程语言：{{ elem.lang }}&nbsp;&nbsp;
-                                判题结果：{{ elem.result }}
-                            </p>
-                            <br>
-                            <br>
-                            <h2><b>源码</b></h2>
-                            <pre>{{ elem.code }}</pre>
-                            {% endif %}
-                            {% endfor %}
-                            {% endif %}
-                            {% endif %}
+
+                            <div class="row">
+                                <div class="tw-element waves-heading default left col-md-12 no-bottom">
+                                    <h3 class="heading-title">源代码<span class="title-seperator"></span></h3>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 ">
+                                    {% if solution_list %}
+                                    {% if solution_id %}
+                                    {% for elem in solution_list %}
+                                    {% if elem.id == solution_id %}
+                                    <p style="font-size: 13px;">
+                                        题目编号：<a
+                                            href="/problem/{{ elem.problem_id }}">{{ elem.problem_id }}</a>&nbsp;&nbsp;
+                                        用户名：{{ elem.username }}&nbsp;&nbsp;
+                                        <br>
+                                        使用内存：{{ elem.memory }}&nbsp;&nbsp;
+                                        使用时间：{{ elem.time }}&nbsp;&nbsp;
+                                        <br>
+                                        编程语言：{{ elem.lang }}&nbsp;&nbsp;
+                                        判题结果：{{ elem.result }}
+                                    </p>
+                                    <br>
+                                    <br>
+                                    <h2><b>源码</b></h2>
+                                    <pre>{{ elem.code }}</pre>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

@@ -40,9 +40,9 @@
                             <ul id="menu" class="sf-menu">
                                 <li class="menu-item menu-item-has-children"><a href="/">主页</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/list/1">题库</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/status">提交记录</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/status/1">提交记录</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/submit/0">提交代码</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/user/ranking">排行榜</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/user/ranking/1">排行榜</a></li>
                                 <li class="menu-item menu-item-has-children">
                                     {% if request.user.username %}
                                     <a href="/user">用户中心</a>
@@ -73,47 +73,88 @@
 
                             <div class="row">
                                 <div class="tw-element waves-heading default left col-md-12 no-bottom">
-                                    <h3 class="heading-title">排行榜(前100)<span class="title-seperator"></span></h3>
+                                    <h3 class="heading-title">排行榜<span class="title-seperator"></span></h3>
                                 </div>
                             </div>
 
                             <div class="row">
-                                <div class="tw-element col-md-12" style="margin-top:0px;">
-                                    <div class="waves-testimonials">
-                                        <div class="testimonial-item clearfix style-default">
-                                            <div class="testimonial-footer clearfix">
+                                <div class="col-md-12">
 
-                                                <table border="1" width=100%>
-                                                    <tr>
-                                                        <th>名次</th>
-                                                        <th>ID</th>
-                                                        <th>用户名</th>
-                                                        <th>用户积分</th>
-                                                        <th>尝试解题数</th>
-                                                        <th>成功解题数</th>
-                                                    </tr>
+                                    {% if page %}
+                                    <table border="1" width=100%>
+                                        <tr>
+                                            <th>名次</th>
+                                            <th>ID</th>
+                                            <th>用户名</th>
+                                            <th>用户积分</th>
+                                            <th>尝试解题数</th>
+                                            <th>成功解题数</th>
+                                        </tr>
+                                        {% for elem in page %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ elem.id }}</td>
+                                            <td>{{ elem.username }}</td>
+                                            <td>{{ elem.point }}</td>
+                                            <td>{{ elem.attempt_number }}</td>
+                                            <td>{{ elem.solved_number }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
 
-                                                    {% if user %}
-                                                    {% for elem in user %}
-                                                    {% if forloop.counter < 101 %}
-                                                    <tr>
-                                                        <td>{{ forloop.counter }}</td>
-                                                        <td>{{ elem.id }}</td>
-                                                        <td>{{ elem.username }}</td>
-                                                        <td>{{ elem.point }}</td>
-                                                        <td>{{ elem.attempt_number }}</td>
-                                                        <td>{{ elem.solved_number }}</td>
-                                                    </tr>
-                                                    {% endif%}
-                                                    {% endfor %}
-                                                    {% else %}
-                                                    <p>暂无</p>
-                                                    {% endif %}
-                                                </table>
+                                    <div aria-label="Page navigation" style="margin-top: 20px;">
+                                        <div class="tw-menu-container pagination">
+                                            <ul id="menu" class="sf-menu pagination">
 
-                                            </div>
+                                                <!--  判断当前页是否有上一页 -->
+                                                {% if page.has_previous %}
+                                                <li class="menu-item menu-item-has-children">
+                                                    <form action="/user/ranking/{{page.previous_page_number}}/"
+                                                        name="prePageForm" method="POST">
+                                                        {% csrf_token %}
+                                                        <input type="submit" value="<<" aria-label="Previous"
+                                                            aria-label="Previous">
+                                                    </form>
+                                                </li>
+                                                {% endif %}
+
+                                                <!--  循环遍历页码列表，并展示到底部 -->
+                                                {% for num in page.paginator.page_range%}
+                                                {%if pindex == page.number%}
+                                                <li class="menu-item menu-item-has-children">
+                                                    <input type="submit" value={{ num }}>
+                                                </li>
+                                                {% else %}
+                                                <li class="menu-item menu-item-has-children">
+                                                    <form action="/user/ranking/{{num}}/" name="indexPageForm"
+                                                        method="POST">
+                                                        {% csrf_token %}
+                                                        <input type="submit" value={{ num }}>
+                                                    </form>
+                                                </li>
+                                                {% endif %}
+                                                {% endfor %}
+
+                                                <!--  判断当前页是否有下一页 -->
+                                                {% if page.has_next %}
+                                                <li class="menu-item menu-item-has-children">
+                                                    <form action="/user/ranking/{{page.next_page_number}}/"
+                                                        name="nextPageForm" method="POST">
+                                                        {% csrf_token %}
+                                                        <input type="submit" value=">>" aria-label="Next">
+                                                    </form>
+                                                </li>
+                                                {% endif %}
+
+                                            </ul>
                                         </div>
                                     </div>
+
+
+                                    {% else %}
+                                    <p>暂无</p>
+                                    {% endif %}
+
                                 </div>
                             </div>
                         </div>

@@ -40,9 +40,9 @@
                             <ul id="menu" class="sf-menu">
                                 <li class="menu-item menu-item-has-children"><a href="/">主页</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/list/1">题库</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/status">提交记录</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/status/1">提交记录</a></li>
                                 <li class="menu-item menu-item-has-children"><a href="/problem/submit/0">提交代码</a></li>
-                                <li class="menu-item menu-item-has-children"><a href="/user/ranking">排行榜</a></li>
+                                <li class="menu-item menu-item-has-children"><a href="/user/ranking/1">排行榜</a></li>
                                 <li class="menu-item menu-item-has-children">
                                     {% if request.user.username %}
                                     <a href="/user">用户中心</a>
@@ -79,52 +79,45 @@
 
                             <div class="row">
                                 <div class="tw-element col-md-12">
-                                    <div class="waves-testimonials">
-                                        <div class="testimonial-item clearfix style-default">
-                                            <div class="testimonial-footer clearfix">
-                                                {% if user %}
-                                                用户名：{{ user.username }}<br>
-                                                编号：{{ user.id }}<br>
-                                                积分：{{ user.point }}<br>
-                                                {% if rank %}
-                                                排名：{{ rank }}<br>
-                                                {% endif %}
-                                                <br>
-                                                <form action="/status/search/" name="userStatusSearchForm"
-                                                    method="POST">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="problem_id" value="">
-                                                    <input type="hidden" name="username" value={{ user.username }}>
-                                                    <input type="hidden" name="result" value="All">
-                                                    <input type="hidden" name="lang" value="All">
-                                                    尝试解题数：{{ user.attempt_number }}&nbsp;&nbsp;
-                                                    <input type="submit" value="查看"><br>
-                                                </form>
-                                                <form action="/status/search/" name="userACSearchForm" method="POST">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="problem_id" value="">
-                                                    <input type="hidden" name="username" value={{ user.username }}>
-                                                    <input type="hidden" name="result" value="Accepted">
-                                                    <input type="hidden" name="lang" value="All">
-                                                    成功解题数：{{ user.solved_number }}&nbsp;&nbsp;
-                                                    <input type="submit" value="查看"><br>
-                                                </form>
-                                                <br>
+                                    {% if user %}
+                                    用户名：{{ user.username }}<br>
+                                    编号：{{ user.id }}<br>
+                                    积分：{{ user.point }}<br>
+                                    {% if rank %}
+                                    排名：{{ rank }}<br>
+                                    {% endif %}
+                                    <br>
 
-                                                注册时间：{{ user.date_joined }}<br>
-                                                最后登陆：{{ user.last_login }}<br><br>
-                                                <span style="color: red; font-size: 20px;">[<a
-                                                        href="/user/logout">退出登录</a>]</span>
+                                    <form action="/status/search/1/" name="userStatusSearchForm" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="problem_id" value="">
+                                        <input type="hidden" name="username" value={{ user.username }}>
+                                        <input type="hidden" name="result" value="All">
+                                        <input type="hidden" name="lang" value="All">
+                                        尝试解题数：{{ user.attempt_number }}&nbsp;&nbsp;
+                                        <input type="submit" value="查看"><br>
+                                    </form>
+                                    <form action="/status/search/1/" name="userACSearchForm" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="problem_id" value="">
+                                        <input type="hidden" name="username" value={{ user.username }}>
+                                        <input type="hidden" name="result" value="Accepted">
+                                        <input type="hidden" name="lang" value="All">
+                                        成功解题数：{{ user.solved_number }}&nbsp;&nbsp;
+                                        <input type="submit" value="查看"><br>
+                                    </form>
+                                    <br>
 
-                                                {% else %}
-                                                未知用户！
-                                                {% endif %}
+                                    注册时间：{{ user.date_joined }}<br>
+                                    最后登陆：{{ user.last_login }}<br><br>
+                                    <span style="color: red; font-size: 20px;">[<a href="/user/logout">退出登录</a>]</span>
 
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {% else %}
+                                    未知用户！
+                                    {% endif %}
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
