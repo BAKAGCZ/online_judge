@@ -50,7 +50,7 @@ def submithandler(request):
         }
 
         try:
-            address = "ws://127.0.0.1:8886/websocket"
+            address = "ws://127.0.0.1:8887/websocket"
             ws = create_connection(address)
             ws.send(json.dumps(send_params))  # 将字典形式的数据转化为字符串
             # print("Sent")

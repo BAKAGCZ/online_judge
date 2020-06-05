@@ -247,7 +247,7 @@ select {
     display: block;
     margin: 0;
     margin-bottom: 20px;
-    padding: 14px 10px;    
+    padding: 9px 10px;    
     width: 230px;
     outline: none;
     border: 1px solid #e9e8e6;
@@ -279,7 +279,7 @@ input[type="reset"],
 input[type="button"] {
     background: none;
     display: inline-block;
-    padding: 15px;
+    padding: 9px;
     border: 2px solid #808080;
     color: #808080;
     font-family: 'Lato', sans-serif;
@@ -1146,7 +1146,7 @@ form#searchform {
 }
 form#searchform input{
     width: 100%;
-    padding-right: 26px;
+    /* padding-right: 26px; */
 }
 .button-search.fa-search {
     position: absolute;
