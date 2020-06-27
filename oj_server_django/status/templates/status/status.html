@@ -279,10 +279,12 @@
                                                             <form action="/status/search/{{page.previous_page_number}}/"
                                                                 name="prePageForm" method="POST">
                                                                 {% csrf_token %}
-                                                                <input type="hidden" name="search_range"
-                                                                    value={{ search_range }}>
-                                                                <input type="hidden" name="search_string"
-                                                                    value={{ search_string }}>
+                                                                <input type="hidden" name="problem_id"
+                                                                    value={{ problem_id }}>
+                                                                <input type="hidden" name="username"
+                                                                    value={{ username }}>
+                                                                <input type="hidden" name="result" value={{ result }}>
+                                                                <input type="hidden" name="lang" value={{ lang }}>
                                                                 <input type="submit" value="<<" aria-label="Previous"
                                                                     aria-label="Previous">
                                                             </form>
@@ -300,10 +302,12 @@
                                                             <form action="/status/search/{{num}}/" name="indexPageForm"
                                                                 method="POST">
                                                                 {% csrf_token %}
-                                                                <input type="hidden" name="search_range"
-                                                                    value={{ search_range }}>
-                                                                <input type="hidden" name="search_string"
-                                                                    value={{ search_string }}>
+                                                                <input type="hidden" name="problem_id"
+                                                                    value={{ problem_id }}>
+                                                                <input type="hidden" name="username"
+                                                                    value={{ username }}>
+                                                                <input type="hidden" name="result" value={{ result }}>
+                                                                <input type="hidden" name="lang" value={{ lang }}>
                                                                 <input type="submit" value={{ num }}>
                                                             </form>
                                                         </li>
@@ -316,10 +320,12 @@
                                                             <form action="/status/search/{{page.next_page_number}}/"
                                                                 name="nextPageForm" method="POST">
                                                                 {% csrf_token %}
-                                                                <input type="hidden" name="search_range"
-                                                                    value={{ search_range }}>
-                                                                <input type="hidden" name="search_string"
-                                                                    value={{ search_string }}>
+                                                                <input type="hidden" name="problem_id"
+                                                                    value={{ problem_id }}>
+                                                                <input type="hidden" name="username"
+                                                                    value={{ username }}>
+                                                                <input type="hidden" name="result" value={{ result }}>
+                                                                <input type="hidden" name="lang" value={{ lang }}>
                                                                 <input type="submit" value=">>" aria-label="Next">
                                                             </form>
                                                         </li>

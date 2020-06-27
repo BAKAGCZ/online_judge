@@ -174,7 +174,7 @@ func JudgeCmd(ProblemID string, Username string, Submitted string, Lang string, 
 	costMemory = ""
 	start := time.Now()
 
-	// CE RE TLE MLE
+	// CE RE MLE
 	res, costMemory = JudgeWithDocker(ProblemID, Lang, filename, limitTimeInt, limitMemoryInt)
 	if res == 0 {
 		existFlag, err := isFileExists(exeFilename)
@@ -193,6 +193,7 @@ func JudgeCmd(ProblemID string, Username string, Submitted string, Lang string, 
 		return "Memory Limit Exceeded", "", ""
 	}
 
+	// TLE
 	duration := time.Since(start)
 	durationMilliSeconds := duration.Nanoseconds() / 1e6
 	costTimeString := strconv.FormatInt(durationMilliSeconds, 10)
@@ -326,20 +327,20 @@ func JudgeWithDocker(ProblemID string, Lang string, filename string, timeLimit i
 			// fmt.Println(statDataMap)
 			mapTmp := statDataMap["memory_stats"].(map[string]interface{})
 			mapFloat64 := mapTmp["max_usage"].(float64)
-			costMemoryFloat64 := mapFloat64 / 1024 / 2 // 单位：KB
+			costMemoryFloat64 := mapFloat64 / 1024 / 20 // 单位：KB
 			limitMemoryStr := strconv.Itoa(memoryLimit)
 			limitMemoryFloat64, _ := strconv.ParseFloat(limitMemoryStr, 64)
 			// fmt.Println("[0mapTmp]：", mapTmp, " mapFloat64:", mapFloat64)
 			if costMemoryFloat64 == 0 {
 				costMemory = "0K"
-				fmt.Println("[1memory_max_usage]：", costMemory, " limit:", limitMemoryFloat64)
+				fmt.Println("[1memory_max_usage] cost:", costMemory, " limit:", limitMemoryFloat64)
 			} else if costMemoryFloat64 <= limitMemoryFloat64 { // 未超出
 				costMemoryInt := int(costMemoryFloat64)
 				costMemory = strconv.Itoa(costMemoryInt) + "K"
-				fmt.Println("[2memory_max_usage]：", costMemoryInt, "KB , cost:", costMemory, " limit:", memoryLimit)
+				fmt.Println("[2memory_max_usage] cost:", costMemoryInt, " limit:", memoryLimit)
 			} else {
 				res = 1
-				fmt.Println("[3memory_limit_error] limit:", limitMemoryFloat64)
+				fmt.Println("[3memory_limit_exceeded] cost:", costMemoryFloat64, "limit:", limitMemoryFloat64)
 			}
 		}
 
